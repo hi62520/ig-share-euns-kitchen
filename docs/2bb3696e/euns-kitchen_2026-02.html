@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>느린호밀 x 은스키친 — 2월 공구 성과 & 4/6 플랜</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FFF8F0; font-family: 'Noto Sans KR', -apple-system, sans-serif; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg, #D4520B 0%, #F5A623 100%); padding: 32px 24px 20px; color: white; }
+  .header h1 { font-size: 20px; font-weight: 800; }
+  .header p { margin-top: 8px; opacity: 0.9; font-size: 12px; }
+
+  .tab-nav { display: flex; overflow: auto; background: white; border-bottom: 2px solid #eee; padding: 0 8px; }
+  .tab-btn { padding: 12px 16px; border: none; cursor: pointer; white-space: nowrap; font-size: 13px; background: transparent; border-bottom: 3px solid transparent; font-weight: 400; color: #666; font-family: inherit; }
+  .tab-btn.active { background: #FFF3E0; border-bottom-color: #D4520B; font-weight: 700; color: #D4520B; }
+
+  .content { padding: 20px 16px; max-width: 800px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card.accent-primary { border-left: 4px solid #D4520B; }
+  .card.accent-blue { border-left: 4px solid #1976D2; }
+  .card.accent-green { border-left: 4px solid #2D5016; }
+  .card.accent-red { border-left: 4px solid #E53935; }
+  .card.accent-accent { border-left: 4px solid #F5A623; }
+  .card.accent-purple { border-left: 4px solid #7B1FA2; }
+  .card h3 { margin: 0 0 14px; font-size: 16px; font-weight: 700; }
+
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat-box { flex: 1; min-width: 100px; text-align: center; background: #FFF8F0; border-radius: 8px; padding: 10px; }
+  .stat-label { font-size: 10px; color: #999; }
+  .stat-value { font-size: 20px; font-weight: 800; }
+
+  .info-box { border-radius: 8px; padding: 12px; font-size: 12px; margin-top: 8px; }
+  .info-box.green { background: #E8F5E9; }
+  .info-box.orange { background: #FFF3E0; }
+  .info-box.blue { background: #E3F2FD; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  .phase-item { border-left: 3px solid; padding-left: 12px; margin-bottom: 14px; }
+  .phase-badge { display: inline-block; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+  .phase-day { font-size: 11px; color: #666; margin-left: 6px; }
+  .phase-type { font-size: 10px; background: #F5F5F5; padding: 1px 6px; border-radius: 8px; color: #888; margin-left: 6px; }
+  .phase-content { margin-top: 3px; font-size: 11px; color: #444; }
+
+  .timeline-item { border-left: 3px solid; padding-left: 10px; margin-bottom: 10px; }
+  .timeline-title { font-weight: 700; font-size: 12px; }
+  .timeline-stat { font-weight: 400; color: #999; font-size: 11px; }
+  .timeline-insight { font-size: 11px; color: #555; }
+
+  .comment-box { border-radius: 8px; padding: 10px; font-size: 12px; margin-bottom: 8px; }
+
+  .product-card { background: #FFF3E0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .product-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .product-name { font-weight: 800; font-size: 14px; color: #D4520B; }
+  .product-badge { font-size: 10px; background: #E8F5E9; color: #2D5016; padding: 3px 8px; border-radius: 10px; font-weight: 600; }
+
+  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .option-box { background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #eee; }
+  .option-name { font-size: 12px; color: #666; margin-bottom: 4px; }
+  .option-old-price { font-size: 11px; color: #999; text-decoration: line-through; }
+  .option-price { font-size: 20px; font-weight: 800; color: #D4520B; }
+
+  .coupon-tier { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+  .coupon-tier:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
+  .coupon-badge { color: white; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; min-width: 36px; text-align: center; display: inline-block; }
+  .coupon-desc { flex: 1; font-size: 11px; }
+  .coupon-desc .extra { color: #888; }
+
+  .price-example { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; }
+  .price-example:not(:last-child) { border-bottom: 1px solid #f5f5f5; }
+  .price-qty { color: #888; min-width: 30px; }
+  .price-combo { flex: 1; }
+  .price-before { color: #999; text-decoration: line-through; margin-right: 6px; }
+  .price-after { color: #D4520B; font-weight: 700; min-width: 60px; text-align: right; }
+
+  .order-target { text-align: center; padding: 10px; border-radius: 8px; }
+  .order-type { font-size: 10px; color: #888; }
+  .order-count { font-size: 22px; font-weight: 800; }
+  .order-pct { font-size: 10px; color: #666; }
+  .order-desc { font-size: 9px; font-weight: 600; margin-top: 4px; }
+
+  .preorder-item { display: flex; gap: 10px; background: #F5F5F5; border-radius: 8px; padding: 10px; align-items: center; margin-bottom: 8px; }
+  .preorder-icon { font-size: 20px; }
+  .preorder-title { font-weight: 700; font-size: 12px; }
+  .preorder-desc { font-size: 11px; color: #666; }
+
+  .guide-item { background: #F5F5F5; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .guide-header { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+  .guide-num { color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .guide-title { font-weight: 700; font-size: 12px; }
+  .guide-desc { font-size: 11px; color: #555; padding-left: 28px; }
+
+  .keyword-box { border-radius: 8px; padding: 10px; }
+  .keyword-label { font-weight: 700; font-size: 11px; margin-bottom: 6px; }
+  .keyword-list { font-size: 11px; color: #555; line-height: 1.8; }
+
+  .goal-banner { background: linear-gradient(135deg, #D4520B, #F5A623); border-radius: 12px; padding: 20px; color: white; text-align: center; margin-bottom: 16px; }
+  .goal-label { font-size: 12px; opacity: 0.9; }
+  .goal-value { font-size: 36px; font-weight: 800; margin: 4px 0; }
+  .goal-sub { font-size: 12px; opacity: 0.9; }
+
+  .compare-box { border-radius: 8px; padding: 12px; }
+  .compare-title { font-weight: 700; margin-bottom: 6px; font-size: 12px; }
+  .compare-list { line-height: 1.8; font-size: 11px; }
+
+  .closing { font-size: 13px; line-height: 1.8; color: #555; }
+
+  canvas { max-width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>느린호밀 x 은스키친 — 4/6 공구 플랜</h1>
+  <p>@wadangtang_lab x @eun_s_kitchen | 2차 공구 협업 자료 | 2026.03.29</p>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('highlight')">2월 성과</button>
+  <button class="tab-btn" onclick="switchTab('plan')">4/6 플랜</button>
+  <button class="tab-btn" onclick="switchTab('product')">상품 구조</button>
+  <button class="tab-btn" onclick="switchTab('guide')">캡션 가이드</button>
+</div>
+
+<div class="content">
+
+  <!-- Tab 1: 2월 성과 -->
+  <div id="tab-highlight" class="tab-panel active">
+
+    <div class="card accent-primary">
+      <h3>2월 첫 공구 — 은스키친님 덕분에 대성공!</h3>
+      <p style="font-size:13px; line-height:1.8; color:#444; margin-bottom:12px;">
+        은스키친님의 콘텐츠 릴레이가 정말 강력했습니다. 특히 <strong style="color:#D4520B">D-3 티저 릴스</strong>가 댓글 559개를 기록하면서 공구 전체의 분위기를 만들어주셨어요.
+      </p>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-label">총 주문</div><div class="stat-value" style="color:#D4520B">188건</div></div>
+        <div class="stat-box"><div class="stat-label">콘텐츠 도달</div><div class="stat-value" style="color:#1976D2">17,572명</div></div>
+        <div class="stat-box"><div class="stat-label">참여(좋아요+댓글)</div><div class="stat-value" style="color:#F5A623">1,364건</div></div>
+        <div class="stat-box"><div class="stat-label">도달 대비 전환</div><div class="stat-value" style="color:#2D5016">1.07%</div></div>
+      </div>
+      <div class="info-box green">
+        전환율 1.07%는 인플루언서 식품 공구 업계 평균(0.5~1.0%) 대비 <strong>상위권</strong>입니다. 은스키친님의 팔로워 신뢰도가 매우 높다는 뜻이에요.
+      </div>
+    </div>
+
+    <div class="card accent-blue">
+      <h3>콘텐츠별 반응 — 어떤 콘텐츠가 효과적이었나?</h3>
+      <div style="max-width:100%; height:240px; margin-bottom:12px;">
+        <canvas id="engagementChart"></canvas>
+      </div>
+      <div style="font-size:12px; line-height:1.8; margin-top:12px;">
+        <div class="timeline-item" style="border-color:#FF6F00">
+          <div class="timeline-title" style="color:#FF6F00">D-3 티저 릴스 <span class="timeline-stat">| 좋아요 182 / 댓글 559 / 도달 17,572</span></div>
+          <div class="timeline-insight">댓글 이벤트 + "빵 끊지 마세요" 공감 메시지가 참여를 폭발시켰어요</div>
+        </div>
+        <div class="timeline-item" style="border-color:#D4520B">
+          <div class="timeline-title" style="color:#D4520B">D-day 교육 캐러셀 <span class="timeline-stat">| 좋아요 100 / 댓글 167</span></div>
+          <div class="timeline-insight">혈당 데이터 기반 교육 콘텐츠가 신뢰 구축의 핵심이었어요</div>
+        </div>
+        <div class="timeline-item" style="border-color:#E53935">
+          <div class="timeline-title" style="color:#E53935">D+3 후기 캐러셀 <span class="timeline-stat">| 좋아요 53 / 댓글 12</span></div>
+          <div class="timeline-insight">"솔직히 저도 놀랐어요" 후기가 올라간 날 주문 56건으로 최대치 기록!</div>
+        </div>
+      </div>
+      <div class="info-box orange">
+        <strong>핵심 발견:</strong> 후기 콘텐츠가 올라간 날(D+3)에 주문이 가장 많았어요. 이번 4/6 공구에서도 <strong>후기 타이밍이 매출의 핵심 변수</strong>입니다.
+      </div>
+    </div>
+
+    <div class="card accent-green">
+      <h3>2월 베스트 댓글 모음</h3>
+      <div class="comment-box" style="background:#F5F5F5; font-style:italic; color:#555;">"혈당 걱정 때문에 빵을 포기했었는데, 이런 빵이 있다니 감사해요"</div>
+      <div class="comment-box" style="background:#F5F5F5; font-style:italic; color:#555;">"남편이 먹어보더니 냉동실에 이것만 넣어달라고 해요 ㅋㅋ"</div>
+      <div class="comment-box" style="background:#F5F5F5; font-style:italic; color:#555;">"은스키친님 추천은 믿고 삽니다. 진짜 맛있어요"</div>
+      <div class="comment-box" style="background:#E8F5E9; color:#2D5016; font-weight:700;">"귀리만 따로 살 수 없나요?" -- 이번에 가능합니다!</div>
+    </div>
+
+  </div>
+
+  <!-- Tab 2: 4/6 플랜 -->
+  <div id="tab-plan" class="tab-panel">
+
+    <div class="card accent-red">
+      <h3>4/6 공구 목표</h3>
+      <div class="goal-banner">
+        <div class="goal-label">2차 공구 매출 목표</div>
+        <div class="goal-value">1,000만원</div>
+        <div class="goal-sub">230건 목표 / 2월 대비 +28%</div>
+      </div>
+      <div class="grid-2" style="font-size:12px;">
+        <div style="background:#FFF3E0; border-radius:8px; padding:12px;">
+          <div style="font-weight:700; color:#D4520B; margin-bottom:4px;">왜 가능한가?</div>
+          <div style="color:#555; font-size:11px; line-height:1.6;">
+            - 2월 구매자 188명 재구매 타이밍<br>
+            - 3,000원 쿠폰 보유 (이번 공구 사용)<br>
+            - 귀리 단독 구매 가능 (신규 수요)<br>
+            - 은스키친님 2차 콘텐츠 신뢰도 상승
+          </div>
+        </div>
+        <div style="background:#E3F2FD; border-radius:8px; padding:12px;">
+          <div style="font-weight:700; color:#1976D2; margin-bottom:4px;">은스키친님 역할 핵심</div>
+          <div style="color:#555; font-size:11px; line-height:1.6;">
+            - 릴스 도달 25,000+ 목표<br>
+            - "한 달 먹어봤더니" 실사용 후기<br>
+            - 후기 콘텐츠 타이밍이 전환 핵심<br>
+            - 귀리 신제품 자연스럽게 노출
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card accent-primary">
+      <h3>콘텐츠 릴레이 플랜 (제안)</h3>
+      <p style="margin-bottom:12px; color:#888; font-size:11px;">2월 성공 패턴(6단계 릴레이)을 기반으로 업그레이드한 플랜입니다. 일정/내용은 조율 가능해요!</p>
+
+      <div class="phase-item" style="border-color:#FF6F00">
+        <span class="phase-badge" style="background:#FF6F00">D-4 티저</span>
+        <span class="phase-day">4/2 (목)</span>
+        <span class="phase-type">릴스</span>
+        <p class="phase-content">"2월에 주문 못 한 분들 많았죠? 드디어 다시 열려요" — 2월 댓글 중 아쉬움/재오픈 요청 캡처 활용</p>
+      </div>
+      <div class="phase-item" style="border-color:#E65100">
+        <span class="phase-badge" style="background:#E65100">D-3 교육</span>
+        <span class="phase-day">4/3 (금)</span>
+        <span class="phase-type">릴스</span>
+        <p class="phase-content">"한 달 먹어봤습니다" — CGM 그래프 before/after 공개. 한 달간 꾸준히 먹은 혈당 변화 데이터</p>
+      </div>
+      <div class="phase-item" style="border-color:#D4520B">
+        <span class="phase-badge" style="background:#D4520B">D-2 레시피</span>
+        <span class="phase-day">4/4 (토)</span>
+        <span class="phase-type">캐러셀</span>
+        <p class="phase-content">봄 시즌 맞춤 활용법 (호밀빵 오픈샌드위치, 에그베네딕트 등). 새로운 레시피 3~4가지</p>
+      </div>
+      <div class="phase-item" style="border-color:#2D5016">
+        <span class="phase-badge" style="background:#2D5016">D-day 오픈</span>
+        <span class="phase-day">4/6 (월)</span>
+        <span class="phase-type">캐러셀</span>
+        <p class="phase-content">골라담기 오픈! "귀리 단독 드디어 가능" + "2개 이상 5% 추가할인" + "3개 이상 10%+그래놀라 증정". 4/6~10 사전주문, 4/13 배송</p>
+      </div>
+      <div class="phase-item" style="border-color:#1976D2">
+        <span class="phase-badge" style="background:#1976D2">D+1~2 후기</span>
+        <span class="phase-day">4/7~8</span>
+        <span class="phase-type">스토리+피드</span>
+        <p class="phase-content">실제 구매자 후기 리그램, Q&A 정리, 보관법/해동법 팁. -- 2월에 이 타이밍이 주문 최대치!</p>
+      </div>
+      <div class="phase-item" style="border-color:#7B1FA2">
+        <span class="phase-badge" style="background:#7B1FA2">마감 리마인드</span>
+        <span class="phase-day">마감 전날</span>
+        <span class="phase-type">릴스</span>
+        <p class="phase-content">"이번에 놓치면 다음은 한참 뒤" — FOMO + 과학적 팩트 1가지 추가</p>
+      </div>
+
+      <div class="info-box green">
+        2월 데이터 기반 핵심: <strong>릴스(티저)에서 도달 폭발 -> 후기 콘텐츠에서 전환 폭발</strong>. 이 두 타이밍을 정확히 잡는 게 1,000만원의 핵심이에요.
+      </div>
+    </div>
+
+    <div class="card accent-accent">
+      <h3>2월 vs 4월 — 뭐가 달라지나?</h3>
+      <div class="grid-2">
+        <div class="compare-box" style="background:#F5F5F5;">
+          <div class="compare-title" style="color:#999;">2월 (첫 공��)</div>
+          <div class="compare-list" style="color:#666;">
+            - 즉시 배송<br>
+            - 3가지 세트 (맛보기/한달/온가족)<br>
+            - 귀리 단독 불가<br>
+            - 릴스 2개 (티저+마감)
+          </div>
+        </div>
+        <div class="compare-box" style="background:#FFF3E0;">
+          <div class="compare-title" style="color:#D4520B;">4월 (2차 공구)</div>
+          <div class="compare-list" style="color:#555;">
+            - 4/6~10 사전주문, 4/13 배송<br>
+            - 골라담기 단일 상품 + 금액별 자동 쿠폰<br>
+            - <strong>귀리 단독 구매 가능!</strong><br>
+            - 릴스 3개 (티저+교육+마감)
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 3: 상품 구조 -->
+  <div id="tab-product" class="tab-panel">
+
+    <div class="card accent-primary">
+      <h3>4/6 상품 구조 — 상품 1개로 끝!</h3>
+
+      <div class="product-card">
+        <div class="product-header">
+          <span class="product-name">느린호밀 골라담기</span>
+          <span class="product-badge">귀리 단독 가능!</span>
+        </div>
+
+        <div class="option-grid">
+          <div class="option-box">
+            <div class="option-name">90% 호밀</div>
+            <div class="option-old-price">25,000원</div>
+            <div class="option-price">23,500원</div>
+          </div>
+          <div class="option-box">
+            <div class="option-name">귀리 호밀</div>
+            <div class="option-old-price">26,000원</div>
+            <div class="option-price">24,500원</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div class="coupon-tier">
+            <span class="coupon-badge" style="background:#FF9800;">1개</span>
+            <span class="coupon-desc"><span class="extra">기본 6% 할인 적용가</span></span>
+          </div>
+          <div class="coupon-tier">
+            <span class="coupon-badge" style="background:#D4520B;">2개</span>
+            <span class="coupon-desc"><strong>5% 쿠폰</strong> 자동 발급 <span class="extra">+ 무료배송</span></span>
+          </div>
+          <div class="coupon-tier">
+            <span class="coupon-badge" style="background:#7B1FA2;">3개+</span>
+            <span class="coupon-desc"><strong>10% 쿠폰</strong> 자동 발급 <span class="extra">+ 무료배송 + 그래놀라 90g 증정</span></span>
+          </div>
+        </div>
+
+        <div style="background:white; border-radius:8px; padding:12px; border:1px solid #eee;">
+          <div style="font-weight:700; margin-bottom:8px; font-size:11px;">구매 예시 (쿠폰 ���용 후)</div>
+          <div class="price-example">
+            <span class="price-qty">2개</span>
+            <span class="price-combo">90% + 귀리</span>
+            <span class="price-before">48,000</span>
+            <span class="price-after">45,600원</span>
+          </div>
+          <div class="price-example">
+            <span class="price-qty">2개</span>
+            <span class="price-combo">90% x 2</span>
+            <span class="price-before">47,000</span>
+            <span class="price-after">44,650원</span>
+          </div>
+          <div class="price-example">
+            <span class="price-qty">3개</span>
+            <span class="price-combo">90%x2 + 귀리</span>
+            <span class="price-before">71,500</span>
+            <span class="price-after">64,350원</span>
+          </div>
+          <div class="price-example" style="border-bottom:none;">
+            <span class="price-qty">3개</span>
+            <span class="price-combo">귀리 x 3</span>
+            <span class="price-before">73,500</span>
+            <span class="price-after">66,150원</span>
+          </div>
+          <div style="font-size:10px; color:#2D5016; margin-top:6px;">= 그래놀라 90g 증정</div>
+        </div>
+      </div>
+
+      <div style="background:#F5F5F5; border-radius:8px; padding:10px; font-size:11px; color:#666;">
+        고객이 고민할 게 없는 구조예요. 90%와 귀리를 자유롭게 골라 담고, 많이 사면 자동 쿠폰 발급! 3개 이상이면 그래놀라까지!
+      </div>
+    </div>
+
+    <div class="card accent-blue">
+      <h3>목표 주문 구성</h3>
+      <div class="grid-3" style="margin-bottom:12px; font-size:12px;">
+        <div class="order-target" style="background:#FFF3E0; border:1px solid #FFE0B2;">
+          <div class="order-type">골라담기 1개</div>
+          <div class="order-count" style="color:#FF9800;">55건</div>
+          <div class="order-pct">24%</div>
+          <div class="order-desc" style="color:#FF9800;">신규 진입 / 맛보기</div>
+        </div>
+        <div class="order-target" style="background:#FBE9E7; border:1px solid #FFCCBC;">
+          <div class="order-type">골라담기 2개</div>
+          <div class="order-count" style="color:#D4520B;">135건</div>
+          <div class="order-pct">59%</div>
+          <div class="order-desc" style="color:#D4520B;">재구매 메인 / 쿠폰활용</div>
+        </div>
+        <div class="order-target" style="background:#F3E5F5; border:1px solid #E1BEE7;">
+          <div class="order-type">골라담기 3개+</div>
+          <div class="order-count" style="color:#7B1FA2;">40건</div>
+          <div class="order-pct">17%</div>
+          <div class="order-desc" style="color:#7B1FA2;">팬층 / 10%할인+증정</div>
+        </div>
+      </div>
+      <div class="info-box green">
+        2월 가장 많은 질문이 <strong>"귀리만 못 사요?"</strong>였어요. 이번에 귀리 단독 옵션 추가됐으니, 콘텐츠에서 자연스럽게 언급해주시면 반응 좋을 거예요!
+      </div>
+    </div>
+
+    <div class="card accent-accent">
+      <h3>사전주문 안내 포인트</h3>
+      <div class="preorder-item"><span class="preorder-icon">--</span><div><div class="preorder-title">주문 기간</div><div class="preorder-desc">4/6(월) ~ 4/10(금) 5일간</div></div></div>
+      <div class="preorder-item"><span class="preorder-icon">--</span><div><div class="preorder-title">배송 시작</div><div class="preorder-desc">4/13(월)부터 순차 발송</div></div></div>
+      <div class="preorder-item"><span class="preorder-icon">--</span><div><div class="preorder-title">자동 알림</div><div class="preorder-desc">주문 시 "4/13 발송 예정" 자동 안내 문자</div></div></div>
+      <div class="preorder-item"><span class="preorder-icon">--</span><div><div class="preorder-title">혜택 정리</div><div class="preorder-desc">2개 이상 5% 자동 쿠폰 + 무배 / 3개 이상 10% 쿠폰 + 그래놀라 증정 / 2월 구매자 3,000원 쿠폰</div></div></div>
+    </div>
+
+  </div>
+
+  <!-- Tab 4: 캡션 가이드 -->
+  <div id="tab-guide" class="tab-panel">
+
+    <div class="card accent-green">
+      <h3>이번 공구 캡션 — 강화 포인트</h3>
+      <p style="margin-bottom:12px; color:#888; font-size:11px;">2월 첫 공구와 차별화되는 2차 공구만의 강점을 살려주세요!</p>
+
+      <div class="guide-item">
+        <div class="guide-header">
+          <span class="guide-num" style="background:#D4520B;">1</span>
+          <span class="guide-title" style="color:#D4520B;">"한 달 먹어봤더니" 실사용 후기</span>
+        </div>
+        <div class="guide-desc">1회성 추천이 아닌 지속 사용 후기 = 훨씬 강한 신뢰. 2월에 처음 사서 한 달 먹어본 솔직한 경험을 공유해주세요.</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-header">
+          <span class="guide-num" style="background:#1976D2;">2</span>
+          <span class="guide-title" style="color:#1976D2;">CGM 데이터 업그레이드</span>
+        </div>
+        <div class="guide-desc">1달간 CGM 누적 데이터가 있으시면 엄청 강력해요. 체중/체지방 변화, 가족 반응 등 새로운 증거를 추가해주세요.</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-header">
+          <span class="guide-num" style="background:#2D5016;">3</span>
+          <span class="guide-title" style="color:#2D5016;">구매자 후기 활용</span>
+        </div>
+        <div class="guide-desc">2월 댓글/DM 중 좋은 후기를 캡처해서 활용하면 "이분 댓글 보고 저도 샀어요" 패턴이 생겨요.</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-header">
+          <span class="guide-num" style="background:#F5A623;">4</span>
+          <span class="guide-title" style="color:#F5A623;">"귀리 단독 드디어 가능!"</span>
+        </div>
+        <div class="guide-desc">가장 많았던 질문이 "귀리만 못 사요?"였어요. 이번에 가능해졌다는 걸 자연스럽게 알려주세요.</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-header">
+          <span class="guide-num" style="background:#7B1FA2;">5</span>
+          <span class="guide-title" style="color:#7B1FA2;">봄 시즌 맥락</span>
+        </div>
+        <div class="guide-desc">봄 해독, 봄 다이어트, 새학기 도시락 등 4월에 맞는 프레이밍. 시즌 레시피(오픈 샌드위치 등)와 함께!</div>
+      </div>
+    </div>
+
+    <div class="card accent-primary">
+      <h3>캡션 키워드 레퍼런스</h3>
+      <p style="margin-bottom:8px; color:#888; font-size:11px;">2월에 반응 좋았던 키워드 + 이번에 추가하면 좋을 키워드</p>
+      <div class="grid-2">
+        <div class="keyword-box" style="background:#FFF3E0;">
+          <div class="keyword-label" style="color:#D4520B;">2월에 효과적이었던 것</div>
+          <div class="keyword-list">
+            "빵 끊지 마세요"<br>
+            "혈당이 내려갔어요"<br>
+            "냉동밥처럼 꺼내먹는"<br>
+            "내돈내산"<br>
+            "솔직히 저도 놀랐어요"
+          </div>
+        </div>
+        <div class="keyword-box" style="background:#E3F2FD;">
+          <div class="keyword-label" style="color:#1976D2;">이번에 추가 추천</div>
+          <div class="keyword-list">
+            "한 달 먹어봤더니"<br>
+            "귀리 단독 드디어"<br>
+            "봄 샌드위치/도시락"<br>
+            "2월 구매자 쿠폰"<br>
+            "이번 물량이 마지막일 수도"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card accent-primary">
+      <h3>혜인 드림</h3>
+      <div class="closing">
+        <p>2월 첫 공구가 이렇게 좋은 반응을 얻은 건 전적으로 은스키친님 콘텐츠의 힘이었어요. 이번 4/6 공구도 함께 잘 만들어봐요! 일정이나 내용 중 조율이 필요한 부분이 있으면 편하게 말씀해주세요.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+const ctx = document.getElementById('engagementChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['D-3 티저\n릴스', 'D-day\n교육', 'D-day\n오픈', 'D+1\n활용', 'D+3\n후기', 'D+4\n마감'],
+    datasets: [
+      { label: '좋아요', data: [182, 100, 81, 67, 53, 58], backgroundColor: '#D4520B', borderRadius: 4 },
+      { label: '댓글', data: [559, 167, 51, 4, 12, 30], backgroundColor: '#F5A623', borderRadius: 4 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 11, family: "'Noto Sans KR'" } } } },
+    scales: {
+      x: { ticks: { font: { size: 9, family: "'Noto Sans KR'" }, maxRotation: 0 } },
+      y: { ticks: { font: { size: 10 } }, grid: { color: '#f0f0f0' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
